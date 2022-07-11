@@ -159,7 +159,7 @@ function [prediction,params] = ExponentialSmoothing(y)
 end
 
 function DifferenceExponentialSmoothing(y)
-
+%
 %
 
 
