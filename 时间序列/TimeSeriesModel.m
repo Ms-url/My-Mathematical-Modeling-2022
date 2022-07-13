@@ -1,13 +1,23 @@
-function [prediction, params, W] = TimeSeries(y,mode,varargin)
+function [prediction, params, W] = TimeSeriesModel(y,mode,varargin)
     % function
-    %    包含
+    %    包含简单移动平移法、指数平滑法、差分指数平滑法、自适应滤波法。
     %
     % @param y:观测序列，列向量
+    %
     % @param mode：预测方法
     %       1 -> 简单移动平均法
-    %       2 -> 
+    %       2 -> 指数平滑法 
+    %       3 -> 差分指数平滑法
+    %       4 -> 自适应滤波法
     %
-    % @return
+    % @return prediction: 
+    %       预测值的结构会随调用函数的不同而该变
+    %
+    % @return params: 
+    %       指数平滑法会有该返回值，为元组
+    %
+    % @return W:
+    %       自适应滤波法产生该返回值
     % 
     prediction = 0;
     params = 0;
@@ -27,31 +37,31 @@ function [prediction, params, W] = TimeSeries(y,mode,varargin)
             disp("自适应滤波法");
             [prediction, W] = AdaptiveFiltering(y,N);
         otherwise
-             disp("输入参数错误");
+            disp("输入参数错误");
     end
     
 end
 
 function prediction = MovingAverage(y)
-    
-%%%%%%%%%%%%   简单移动平均法  %%%%%%%%%%%%
-%     适用范围：
-%           当预测目标的基本趋势是在某一水平上下波动时，可用一次简单移动平均方法建立预测模型
-%           简单移动平均法只适合做近期预测，而且是预测目标的发展趋势变化不大的情况。
-%     优缺点：
-%           如果目标的发展趋势存在其它的变化，采用简单移动平均法就会产生较大的预测偏差和滞后。
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % function：简单移动平均法
-    %       输入观察序列y，计算平移项 N 由2到y长度2/3 的预测结果，依据均方差最小原则，输出最优解
-    %
-    % @param y:瑙傛祴搴忓垪锛屽垪鍚戦噺nx1
-    %
-    % @return prediction锛?
-    %       琛屽悜閲?1x3
-    %           N(骞崇Щ椤规暟), 鍧囨柟宸紝 y(t+1)
-    %
+%%%%%%%%%%%%%%%%%%%   简单移动平均法  %%%%%%%%%%%%%%%%%%%%%%
+% 适用范围：
+%      当预测目标的基本趋势是在某一水平上下波动时，可用一次简单移动平均方法建立预测模型
+%      简单移动平均法只适合做近期预测，而且是预测目标的发展趋势变化不大的情况。
+% 优缺点：
+%      如果目标的发展趋势存在其它的变化，采用简单移动平均法就会产生较大的预测偏差和滞后。
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function：简单移动平均法
+%       输入观察序列y，计算平移项 N 由2到y长度2/3 的预测结果，
+%       依据均方差最小原则，输出最优解。
+%       对不同 N 值的均方差进行绘图比较，figure句柄 99
+%
+% @param y: 观测序列，列向量，nx1
+%
+% @return prediction:
+%        N(平移项数)，均方差，y(t+1)
+%
     len=length(y);
-    S = []; % 鍧囨柟宸?
+    S = []; % 均方差
     output = [];
     for N = 2:floor(len*2/3)
         count=0;
@@ -64,60 +74,52 @@ function prediction = MovingAverage(y)
         output = [output;N,Mtout];
     end
     
-    % 缁樺浘姣旇緝
+    % 绘图比较
     figure(99)
-    title('绠?鍗曠Щ鍔ㄥ钩鍧囨硶鏍囧噯宸?')
+    title('均方差图')
     plot(S(:,1),S(:,2),'-o');
     xlabel('N');ylabel('S');
     
     [x,y]=find(S==min(S(:,2))); 
-    prediction = [N,min(S(:,2)),output(x,y)];  % 娉ㄦ剰prediction 鐨勭粨鏋?
+    prediction = [N,min(S(:,2)),output(x,y)];  % prediction ?
     fprintf("N = %d\nprediction = %f",output(x,1),prediction);
 end
 
 function [prediction,params] = ExponentialSmoothing(y)
-<<<<<<< HEAD
 %%%%%%%%%%%%    指数平滑法   %%%%%%%%%%%%
-%     适用范围：
-%           指数平滑法根据平滑次数的不同，又分为一次指数平滑法、二次指数平滑法和三次指数平滑法
-%     优缺点：
-%           当发展趋势存在其它的变化，采用简单移动平均法就会产生较大的预测偏差和滞后。
+% 适用范围：
+%       指数平滑法根据平滑次数的不同，又分为一次指数平滑法、二次指数平滑法和三次指数平滑法
+% 优缺点：
+%       当发展趋势存在其它的变化，采用简单移动平均法就会产生较大的预测偏差和滞后。
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % @function 指数平滑法
-    %       输入观察序列y，计算alpha 取0.1、0.2、...0.9、1 的结果，依据均方差最小原则，输出最优解
-=======
-    %%%%%%%    鎸囨暟骞虫粦娉?   %%%%%%%%%
-    % 閫傜敤鑼冨洿锛?
-    %       鎸囨暟骞虫粦娉曟牴鎹钩婊戞鏁扮殑涓嶅悓锛屽張鍒嗕负涓?娆℃寚鏁板钩婊戞硶銆佷簩娆℃寚鏁板钩婊戞硶鍜屼笁娆℃寚鏁板钩婊戞硶
-    % 浼樼己鐐癸細
-    %       褰撳彂灞曡秼鍔垮瓨鍦ㄥ叾瀹冪殑鍙樺寲锛岄噰鐢ㄧ畝鍗曠Щ鍔ㄥ钩鍧囨硶灏变細浜х敓杈冨ぇ鐨勯娴嬪亸宸拰婊炲悗銆?
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % @function 鎸囨暟骞虫粦娉?
-    %       杈撳叆瑙傚療搴忓垪y锛岃绠梐lpha 鍙?0.1銆?0.2銆?...0.9銆?1 鐨勭粨鏋滐紝渚濇嵁鍧囨柟宸渶灏忓師鍒欙紝杈撳嚭鏈?浼樿В
->>>>>>> f92c044ecdee66bf80d6b2c4905686b79504e842
-    %
-    % @param y锛?
-    %       瑙傛祴搴忓垪锛屽垪鍚戦噺nx1
-    %
-    % @return prediction锛?
-    %       鏁版嵁鐭╅樀 prediction = 3x3 
-    %       杈撳嚭涓?銆佷簩銆佷笁娆℃寚鏁版ā鍨嬫渶浼樿В
-    %           alpha1锛屽潎鏂瑰樊1锛寉1锛坱+1锛?
-    %           alpha2锛屽潎鏂瑰樊2锛寉2锛坱+1锛?
-    %           alpha3锛屽潎鏂瑰樊3锛寉3锛坱+1锛?
-    %
-    % @return params:
-    %       鍏冪粍 params
-    %       杈撳嚭浜屻?佷笁娆℃寚鏁版ā鍨嬬殑绯绘暟
-    %           a2,b2
-    %           a3,b3,c3
-    %       瀵瑰簲妯″瀷锛?
-    %       y(t+T) = a2 + b2*T;
-    %       y(t+T) = a3 + b3*T + c3*T^2;
+% @function 指数平滑法
+%       输入观察序列y，计算alpha 取0.1、0.2、...0.9、1 的结果，
+%       依据均方差最小原则，输出最优解。
+%       结果中包含：
+%           一次指数平滑法、二次指数平滑法、三次指数平滑法
+%       对不同 alpha 值的均方差进行绘图比较，figure句柄 98
+%
+% @param y: 观测序列，列向量，nx1
+%
+% @return prediction：
+%       数据矩阵 prediction = 3x3
+%       输出最优解
+%           alpha1，均方差1，y(t+1)   <--   一次指数平滑模型
+%           alpha2，均方差2，y(t+1)   <--   二次指数平滑模型
+%           alpha3，均方差3，y(t+1)   <--   三次指数平滑模型
+%
+% @return params:
+%      元组 params
+%         a2，b2
+%         a3, b3, c3
+%      对应模型
+%      y(t+T) = a2 + b2*T               <--   二次指数平滑模型
+%      y(t+T) = a3 + b3*T + c3*T^2      <--   三次指数平滑模型
+%
     
-    output = zeros([3,length(y)]); % 绗瑃+1椤?
-    S = zeros([3,length(y)]); % 鍧囨柟宸?
-    St_end = zeros(3,10); % 绗瑃涓钩婊戦」
+    output = zeros([3,length(y)]); % 
+    S = zeros([3,length(y)]); % 均方差
+    St_end = zeros(3,10); % 
     len=length(y);
     
     for j = 1:10
@@ -128,7 +130,7 @@ function [prediction,params] = ExponentialSmoothing(y)
 
         St1_0 = sum(y(1:4))/4; 
         St2_0 = St1_0;
-        St3_0 = St2_0;  % 鍒濆鍊硷紝鍙栧墠鍑犻」鍧囧??
+        St3_0 = St2_0;  % 初始值为前几项的均值
         for i = 1:len(y)
             if i==1
                 St1(i) = alpha*y(i)+(1-alpha)*St1_0;
@@ -161,22 +163,22 @@ function [prediction,params] = ExponentialSmoothing(y)
     c3 = alpha^2/(2*(1-alpha)^2) * (St_end(:,1) - 2*St_end(:,2) + St_end(:,3));
     param3 = [a3;b3;c3];
     
-    % 缁樺浘姣旇緝
+    % 绘图比较
     figure(98)
-    title('鎸囨暟骞虫粦娉曟爣鍑嗗樊');hold on;
+    title('均方差图');hold on;
     for i=1:3
         plot(0.1:0.1:1,S(i,:),'-o');
     end
-    legend('涓?娆?','浜屾','涓夋')
+    legend('一次','二次','三次')
     xlabel('alpha');ylabel('S');
     
     prediction = zeros([3,3]); 
-    % 鏁版嵁鐭╅樀
+    % 数据矩阵
     % prediction = 3x3 
-    % 杈撳嚭涓?銆佷簩銆佷笁娆℃寚鏁版ā鍨嬫渶浼樿В
-    %   alpha1锛屽潎鏂瑰樊1锛寉1锛坱+1锛?
-    %   alpha2锛屽潎鏂瑰樊2锛寉2锛坱+1锛?
-    %   alpha3锛屽潎鏂瑰樊3锛寉3锛坱+1锛?
+    % 
+    %   alpha1，均方差1，y(t+1)
+    %   alpha2，均方差2，y(t+1)
+    %   alpha3，均方差3，y(t+1)
     % 
     for i=1:3
         [x,y]=find(S==min(S(i,:)));
@@ -204,15 +206,20 @@ function prediction = DifferenceExponentialSmoothing(y)
 %     当时间序列呈直线增加时，可运用一阶差分指数平滑模型来预测。
 %     当时间序列呈现二次曲线增长时，可用二阶差分指数平滑模型来预测
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % function ：差分指数平滑法
-    %       输出最优先解
-    %       
-    % @param y: 观察序列，列项量，nx1
-    %
-    % @return prediction：
-    %
-    % @return params：
-    %
+% function ：差分指数平滑法
+%       输入观察序列y，计算alpha 取0.1、0.2、...0.9、1 的结果，
+%       依据均方差最小原则，输出最优解，
+%       结果中包含：
+%            一次差分模型、二次差分模型
+%       对不同 alpha 值的均方差进行绘图比较，figure句柄 97
+%
+% @param y: 观察序列，列项量，nx1
+%
+% @return prediction：
+%       数据矩阵2x3
+%           alpha1, 均方差1，y(t+1)     <--   一次差分模型
+%           alpha2, 均方差2，y(t+1)     <--   二次差分模型
+%
     len = length(y);
     % 一阶差分
     d_y = zeros([10,len]);
@@ -263,16 +270,25 @@ end
 
 function [predication, W] = AdaptiveFiltering(y,N)
 %%%%%%%%%%  自适应滤波法 %%%%%%%%%%
-%
-%
+% 是以时间序列的历史观测值进行某种加权平均来预测的，
+% 它要寻找一组“最佳”的权数，其办法是先用一组给定的权数来计算一个预测值
+% 然后计算预测误差，再根据预测误差调整权数以减少误差。这样反复进行，
+% 直至找出一组“最佳”权数，使误差减少到最低限度.故称为自适应滤波法
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   N=2时
 %   y(t+1) = w(1)*y(t) + w(2)*y(t-1)
+%
+% @param N:权重个数
+%       更改N需外部输入
+%
+% @return predication：
+%       行向量   ？？？？？？？？？？
+%
 
     if N==0
         N=2; % 权重个数
     end
-    len=length(y); 
+    len = length(y); 
     k=0.9; % 学习常数
     
     diff=10000;
@@ -289,6 +305,5 @@ function [predication, W] = AdaptiveFiltering(y,N)
     end
     fprintf("最大差值 = %f",diff);
 end
-
 
 

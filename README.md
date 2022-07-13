@@ -1,2 +1,2 @@
 # Mathematical-Modeling-2022
-数模协做
+数模备赛2022
