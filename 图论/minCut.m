@@ -1,6 +1,6 @@
 function tra = minCut(r,n)
 
-% function : 由残余网络获取最小割
+% function : 由最大流的残余网络获取最小割
 %:param r: 残余网络
 %:param n: 残余网络大小 n * n
     

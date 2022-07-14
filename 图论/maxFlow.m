@@ -1,6 +1,7 @@
 function [r,totalflow] = maxFlow( r , n )
 
-% function: sap+gap算法 获取初始网络r的最大流，以及残留网络
+% function: sap+gap算法 获取初始网络r的最大流，以及残留网络。
+% illustrate：源点在（1，1），汇点在（n，n）
 % param r; 稀疏矩阵，初始边权图
 % param n: 顶点个数
 % return : 残留网络r ，最大流totalflow
