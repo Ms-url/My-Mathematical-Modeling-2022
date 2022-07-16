@@ -1,0 +1,15 @@
+
+dp 为蓝桥杯期间所写，来源为leetcode上的动态规划问题
+
+线性规化
+  matlab函数：linprog()
+
+非线性规划
+  matlab函数：fmincon()
+
+整数规划 ？？？
+
+动态规划
+  关键在于写出状态转移方程, 和边界条件
+  详见 DynamicProgramming.java
+
