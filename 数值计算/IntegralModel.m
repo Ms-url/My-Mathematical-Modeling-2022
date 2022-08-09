@@ -49,7 +49,7 @@
 %           0.4597 0.7081 0.6633 0.4134 0.1433
 % 
 % 高精度Lobatto积分法
-%       格式： z = quadl(Fun,a,b)
+%       格式： z = quad(Fun,a,b)
 % 
 % 自适应Gauss-Kronrod数值积分
 %       格式： z = quadgk(Fun,a,b)
@@ -111,3 +111,13 @@
 %               zmax = @(x,y) sqrt(1 - x.^2 - y.^2);
 %               使用 ‘tiled’ 方法计算定积分。
 %               q = integral3(fun,xmin,xmax,ymin,ymax,zmin,zmax,‘Method’,‘tiled’)
+
+
+% 蒙特卡洛积分
+% Monte Carlo法是通过大量实验来求取随机变量近似值的一种常用的方法，在现代科学研究中经常用来求解一些建模困难的问题。
+
+
+
+
+
+
