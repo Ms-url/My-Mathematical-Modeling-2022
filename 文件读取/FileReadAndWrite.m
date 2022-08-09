@@ -6,7 +6,10 @@
 %%% 文件写入
 %   xlswrite()
     xlswrite(fliename);
-
+    
+%%% csv
+    csvread();
+    
 %%%%%%%%%%%%%%%%%% 记事本文件读写
 %   load() 包含字符串时一般不能使用此函数
 %   textread() 该函数也可读取 .dat  .m  .csv 的文件
